@@ -1,0 +1,10 @@
+{
+  "name": "diff-sequence",
+  "version": "1.0.0",
+  "description": "An implementation of a diff algorithm on arrays and objects",
+  "dependencies": {
+    "ejson": "aleclarson/ejson#1.0.7",
+    "meteor-client": "aleclarson/meteor-client#1.1.7",
+    "underscore": "aleclarson/underscore#1.5.2"
+  }
+}
