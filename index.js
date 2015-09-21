@@ -1,4 +1,9 @@
-DiffSequence = {};
+
+var Meteor = require('meteor-client');
+var EJSON = require('ejson');
+var _ = require('underscore');
+
+var DiffSequence = {};
 
 // ordered: bool.
 // old_results and new_results: collections of documents.
@@ -20,7 +25,7 @@ DiffSequence.diffQueryUnorderedChanges = function (oldResults, newResults,
   var projectionFn = options.projectionFn || EJSON.clone;
 
   if (observer.movedBefore) {
-    throw new Error("_diffQueryUnordered called with a movedBefore observer!");
+    throw new Error('_diffQueryUnordered called with a movedBefore observer!');
   }
 
   newResults.forEach(function (newDoc, id) {
@@ -59,22 +64,22 @@ DiffSequence.diffQueryOrderedChanges = function (old_results, new_results,
   var new_presence_of_id = {};
   _.each(new_results, function (doc) {
     if (new_presence_of_id[doc._id])
-      Meteor._debug("Duplicate _id in new_results");
+      Meteor._debug('Duplicate _id in new_results');
     new_presence_of_id[doc._id] = true;
   });
 
   var old_index_of_id = {};
   _.each(old_results, function (doc, i) {
     if (doc._id in old_index_of_id)
-      Meteor._debug("Duplicate _id in old_results");
+      Meteor._debug('Duplicate _id in old_results');
     old_index_of_id[doc._id] = i;
   });
 
   // ALGORITHM:
   //
-  // To determine which docs should be considered "moved" (and which
+  // To determine which docs should be considered 'moved' (and which
   // merely change position because of other docs moving) we run
-  // a "longest common subsequence" (LCS) algorithm.  The LCS of the
+  // a 'longest common subsequence' (LCS) algorithm.  The LCS of the
   // old doc IDs and the new doc IDs gives the docs that should NOT be
   // considered moved.
 
@@ -85,12 +90,12 @@ DiffSequence.diffQueryOrderedChanges = function (old_results, new_results,
   // state.
 
   // Then, once we have the items that should not move, we walk through the new
-  // results array group-by-group, where a "group" is a set of items that have
+  // results array group-by-group, where a 'group' is a set of items that have
   // moved, anchored on the end by an item that should not move.  One by one, we
-  // move each of those elements into place "before" the anchoring end-of-group
+  // move each of those elements into place 'before' the anchoring end-of-group
   // item, and fire changed events on them if necessary.  Then we fire a changed
   // event on the anchor, and move on to the next group.  There is always at
-  // least one group; the last group is anchored by a virtual "null" id at the
+  // least one group; the last group is anchored by a virtual 'null' id at the
   // end.
 
   // Asymptotically: O(N k) where k is number of ops, or potentially
@@ -152,7 +157,7 @@ DiffSequence.diffQueryOrderedChanges = function (old_results, new_results,
   unmoved.reverse();
 
   // the last group is always anchored by the end of the result list, which is
-  // an id of "null"
+  // an id of 'null'
   unmoved.push(new_results.length);
 
   _.each(old_results, function (doc) {
@@ -249,3 +254,4 @@ DiffSequence.applyChanges = function (doc, changeFields) {
   });
 };
 
+module.exports = DiffSequence;
